@@ -19,7 +19,11 @@ const authMiddleware = require('./controllers/authMiddleware');
 app.post('/auth/register', authController.register);
 app.post('/auth/login', authController.login);
 app.post('/auth/verify-otp', authController.verifyOtp);
-// app.get('/auth/me', authMiddleware, authController.getMe);
+app.get('/auth/users', authMiddleware, authController.getAllUsers);
+app.post('/auth/follow/:targetUserId', authMiddleware, authController.sendFollowRequest);
+app.post('/auth/f', authMiddleware, authController.sendFollowRequest);
+app.post('/auth/accept/:requesterId', authMiddleware, authController.acceptFollowRequest);
+app.get('/auth/pending-requests', authMiddleware, authController.getPendingRequests);
 
 // ✅ Root route
 app.get('/', (req, res) => {

@@ -33,7 +33,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Register")),
+      appBar: AppBar(title: const Text("Register"),
+      automaticallyImplyLeading: false,),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(children: [

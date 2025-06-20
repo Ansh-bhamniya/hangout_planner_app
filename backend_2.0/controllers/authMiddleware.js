@@ -3,23 +3,27 @@ const responses = require('../utils/responses');
 const User = require('../models/user');
 
 const authMiddleware = async (req, res, next) => {
-    const token = req.header('Authorization');
-    if (!token) {
-        return res.status(401).json(responses.error("No token provided."));
+    const authHeader = req.header('Authorization');
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        return res.status(401).json(responses.error("No or invalid token format."));
     }
 
+    const token = authHeader.split(" ")[1];
+
     try {
-        const decoded = jwt.verify(token.split(" ")[1], process.env.JWT_SECRET || "sher");
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || "sher");
         const user = await User.findById(decoded.userId);
 
         if (!user) {
-            return res.status(401).json(responses.error("Invalid token"));
+            return res.status(401).json(responses.error("User not found."));
         }
 
         req.user = user;
         next();
     } catch (err) {
-        return res.status(401).json(responses.error("Invalid token."));
+        console.error("Auth error:", err.message);
+        return res.status(401).json(responses.error("Invalid or expired token."));
     }
 };
 

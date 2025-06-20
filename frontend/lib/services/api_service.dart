@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
   // ✅ Use this for Android Emulator
-  static const String baseUrl = 'http://10.0.2.2:5050';
+  static const String baseUrl = 'http://localhost:5050';
 
   // Save token to local storage
   static Future<void> saveToken(String token) async {
@@ -75,4 +75,77 @@ class ApiService {
       return {'success': 'false', 'message': 'OTP verification failed: $e'};
     }
   }
+  // fetch all users 
+  static Future<List<dynamic>> fetchAllUsers() async {
+    final token = await getToken();
+    print(' this_is_my_token ${token}');
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/auth/users'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['data']; // assuming response.success_data returns { data: [...] }
+    } else {
+      throw Exception('Failed to load users');
+    }
+  }
+
+  static Future<void> sendFollowRequest(String targetUserId) async {
+    final token = await getToken();
+    final response = await http.post(
+      Uri.parse("$baseUrl/auth/follow/$targetUserId"),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token'
+      },
+    );
+
+    if (response.statusCode != 200) {
+      print("❌ Response body: ${response.body}");
+      print("❌ Response status: ${response.statusCode}");
+      throw Exception('Failed to send follow request');
+    }
+
+    print("✅ Follow request successful for $targetUserId");
+  }
+
+  // Get all follow requests receive
+  static Future<List<dynamic>> fetchPendingFollowRequests() async {
+    final token = await getToken();
+    final response = await http.get(
+      Uri.parse('$baseUrl/auth/pending-requests'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+    print('body : ${response.statusCode}');    
+    print('body : ${response.body}');
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body)['data'];
+    } else {
+      throw Exception('Failed to load follow requests');
+    }
+  }
+    // Accept a follow request
+  static Future<void> acceptFollowRequest(String requesterId) async {
+    final token = await getToken();
+    final response = await http.post(
+      Uri.parse('$baseUrl/auth/accept/$requesterId'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+    print("📥 Response status: ${response.statusCode}");
+    print("📥 Response body: ${response.body}");
+    if (response.statusCode != 200) {
+      throw Exception('Failed to accept follow request');
+    }
+  }
+
 }
