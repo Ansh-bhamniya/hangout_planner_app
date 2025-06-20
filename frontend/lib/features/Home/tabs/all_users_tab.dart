@@ -11,7 +11,7 @@ class AllUsersTab extends StatefulWidget {
 class _AllUsersTabState extends State<AllUsersTab> {
   List<dynamic> users = [];
   bool isLoading = true;
-  
+  String? currentUserId;
 
   @override
   void initState() {
@@ -22,8 +22,10 @@ class _AllUsersTabState extends State<AllUsersTab> {
   Future<void> fetchUsers() async {
     try {
       final data = await ApiService.fetchAllUsers();
+      final myId = await ApiService.getCurrentUserId(); // Make sure this exists in ApiService
       setState(() {
-        users = data;
+        currentUserId = myId;
+        users = data.where((user) => user['_id'] != myId).toList(); // 🚫 Filter out self
         isLoading = false;
       });
     } catch (e) {
@@ -64,24 +66,26 @@ class _AllUsersTabState extends State<AllUsersTab> {
                   final user = users[index];
                   final isRequested = user['followRequested'] == true;
                   final isFriend = user['isFriend'] == true;
-                  print('USER: ${user['_id']}, isFriend: ${user['isFriend']}, followRequested: ${user['followRequested']}');
+
+                  print('USER: ${user['_id']}, isFriend: $isFriend, followRequested: $isRequested');
 
                   String buttonText;
                   Color buttonColor;
                   VoidCallback? onPressed;
+
                   if (isFriend) {
-                  buttonText = "Friend";
-                  buttonColor = Colors.green;
-                  onPressed = null;
-                } else if (isRequested) {
-                  buttonText = "Requested";
-                  buttonColor = Colors.grey;
-                  onPressed = null;
-                } else {
-                  buttonText = "Follow";
-                  buttonColor = Colors.blue;
-                  onPressed = () => sendFollowRequest(user['_id']);
-                }
+                    buttonText = "Friend";
+                    buttonColor = Colors.green;
+                    onPressed = null;
+                  } else if (isRequested) {
+                    buttonText = "Requested";
+                    buttonColor = Colors.grey;
+                    onPressed = null;
+                  } else {
+                    buttonText = "Follow";
+                    buttonColor = Colors.blue;
+                    onPressed = () => sendFollowRequest(user['_id']);
+                  }
 
                   return ListTile(
                     leading: CircleAvatar(
@@ -111,7 +115,6 @@ class _AllUsersTabState extends State<AllUsersTab> {
                         style: const TextStyle(fontSize: 14, color: Colors.white),
                       ),
                     ),
-
                   );
                 },
               ),

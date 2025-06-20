@@ -148,4 +148,36 @@ class ApiService {
     }
   }
 
+  static Future<List<dynamic>> fetchFriends() async {
+  final token = await getToken();
+  final response = await http.get(
+    Uri.parse('$baseUrl/auth/friends'),
+    headers: {
+      'Authorization': 'Bearer $token',
+    },
+  );
+  if (response.statusCode == 200) {
+    return jsonDecode(response.body)['data'];
+  } else {
+    throw Exception('Failed to load friends');
+  }
+}
+
+static Future<String> getCurrentUserId() async {
+  final token = await getToken();
+  final response = await http.get(
+    Uri.parse('$baseUrl/auth/me'),
+    headers: {
+      'Authorization': 'Bearer $token',
+    },
+  );
+
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body)['data'];
+    return data['_id'];
+  } else {
+    throw Exception('Failed to fetch current user ID');
+  }
+}
+
 }

@@ -251,6 +251,38 @@ const getPendingRequests = async (req, res) => {
   }
 };
 
+const getFriends = async (req, res) => {
+  try {
+    const currentUser = await User.findById(req.user._id);
+
+    // All users who are both in following and followers = friends
+    const friendIds = currentUser.following.filter(followingId =>
+      currentUser.followers.includes(followingId)
+    );
+
+    // Fetch friend user data
+    const friends = await User.find({ _id: { $in: friendIds } }, 'name phoneNumber profileImage');
+
+    return res.status(200).json({ data: friends });
+  } catch (err) {
+    console.error("❌ getFriends error:", err);
+    return res.status(500).json({ message: "Failed to fetch friends" });
+  }
+};
+
+// GET /auth/me - Returns current user ID and basic info
+const getMe = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id, 'name phoneNumber _id');
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+    return res.status(200).json({ success: true, data: user });
+  } catch (err) {
+    console.error("❌ getMe error:", err);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+};
   
 
 
@@ -262,6 +294,8 @@ module.exports = {
   sendFollowRequest,
   acceptFollowRequest,
   getPendingRequests,
+  getFriends,
+  getMe
   
 //   getMe
 };
