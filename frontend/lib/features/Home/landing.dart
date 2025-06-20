@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend_01/features/Home/tabs/all_users_tab.dart';
 import 'package:frontend_01/features/Home/tabs/friends_tab.dart';
 import 'package:frontend_01/features/Home/tabs/noification_tab.dart';
+import 'package:frontend_01/features/Profile/three_dots.dart';
 import 'package:frontend_01/features/auth/login_screen.dart';
 
 class LandingScreen extends StatelessWidget {
@@ -41,8 +42,17 @@ class LandingScreen extends StatelessWidget {
       ),
       backgroundColor: Colors.blue,
       automaticallyImplyLeading: false,
-      leading: null,
+      leading:    IconButton(
+                  icon: const Icon(Icons.more_vert , color: Colors.white,), // ✅ Three dots icon
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const ThreeDots()),
+                    );
+                  },
+                ), 
       actions: [
+      
         IconButton(
           icon: Icon(Icons.logout_rounded,
           color: Colors.white,

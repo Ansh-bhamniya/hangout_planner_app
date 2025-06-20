@@ -163,21 +163,35 @@ class ApiService {
   }
 }
 
-static Future<String> getCurrentUserId() async {
-  final token = await getToken();
-  final response = await http.get(
-    Uri.parse('$baseUrl/auth/me'),
-    headers: {
-      'Authorization': 'Bearer $token',
-    },
-  );
+  static Future<String> getCurrentUserId() async {
+    final token = await getToken();
+    final response = await http.get(
+      Uri.parse('$baseUrl/auth/me'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
 
-  if (response.statusCode == 200) {
-    final data = jsonDecode(response.body)['data'];
-    return data['_id'];
-  } else {
-    throw Exception('Failed to fetch current user ID');
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body)['data'];
+      return data['_id'];
+    } else {
+      throw Exception('Failed to fetch current user ID');
+    }
   }
-}
-
+  // used in profile page 
+  static Future<Map<String, dynamic>> getCurrentUserDetails() async {
+    final token = await getToken();
+    final response = await http.get(
+      Uri.parse('$baseUrl/auth/me'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body)['data'];
+    } else {
+      throw Exception('Failed to fetch current user');
+    }
+  }
 }
