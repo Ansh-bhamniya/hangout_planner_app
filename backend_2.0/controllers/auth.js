@@ -114,32 +114,29 @@ const verifyOtp = async (req, res) => {
 //   }));
 // };
 
+// Updated getAllUsers controller
 const getAllUsers = async (req, res) => {
   try {
     const currentUserId = req.user._id;
     const currentUser = await User.findById(currentUserId);
 
-    const users = await User.find({}, 'name phoneNumber profileImage followRequests followers following').lean();
+    const users = await User.find({}, 'name phoneNumber profileImage bio followRequests followers').lean();
 
     const modifiedUsers = users.map(user => {
       const isSelf = user._id.toString() === currentUserId.toString();
 
-      // Check if current user requested this user
       const isRequested = user.followRequests?.some(
         id => id.toString() === currentUserId.toString()
       );
 
-      // Mutual friendship check
-      const isFriend = currentUser.following?.some(
-        id => id.toString() === user._id.toString()
-      ) && user.following?.some(
-        id => id.toString() === currentUserId.toString()
-      );
+      const isFriend =
+        currentUser.following?.some(id => id.toString() === user._id.toString()) &&
+        user.followers?.some(id => id.toString() === currentUserId.toString());
 
       return {
         ...user,
         followRequested: !isSelf && isRequested && !isFriend,
-        isFriend: !isSelf && isFriend
+        isFriend: !isSelf && isFriend,
       };
     });
 
@@ -149,6 +146,7 @@ const getAllUsers = async (req, res) => {
     return res.status(500).json(responses.error("Failed to fetch users"));
   }
 };
+
 
 
 
@@ -261,7 +259,7 @@ const getFriends = async (req, res) => {
     );
 
     // Fetch friend user data
-    const friends = await User.find({ _id: { $in: friendIds } }, 'name phoneNumber profileImage');
+    const friends = await User.find({ _id: { $in: friendIds } }, 'name phoneNumber bio profileImage');
 
     return res.status(200).json({ data: friends });
   } catch (err) {

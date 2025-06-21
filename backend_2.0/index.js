@@ -14,7 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 // ✅ Controllers
 const authController = require('./controllers/auth');
 const authMiddleware = require('./controllers/authMiddleware');
-
+const { getUserNetwork , getFriendsOf, getFriendsOfFriends} = require('./controllers/userNetworkController');
 // ✅ Auth Routes
 app.post('/auth/register', authController.register);
 app.post('/auth/login', authController.login);
@@ -26,6 +26,10 @@ app.post('/auth/accept/:requesterId', authMiddleware, authController.acceptFollo
 app.get('/auth/pending-requests', authMiddleware, authController.getPendingRequests);
 app.get('/auth/friends', authMiddleware, authController.getFriends);
 app.get('/auth/me', authMiddleware, authController.getMe);
+
+app.get('/auth/network', authMiddleware, getUserNetwork);
+app.get('/auth/direct-friends', authMiddleware, getFriendsOf);
+app.get('/auth/friends-of-friends', authMiddleware, getFriendsOfFriends);
 
 // ✅ Root route
 app.get('/', (req, res) => {

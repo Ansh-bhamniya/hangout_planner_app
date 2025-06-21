@@ -87,10 +87,12 @@ class ApiService {
         'Authorization': 'Bearer $token',
       },
     );
+    // print('data : ${response.body}');
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       return data['data']; // assuming response.success_data returns { data: [...] }
+    
     } else {
       throw Exception('Failed to load users');
     }
@@ -194,4 +196,50 @@ class ApiService {
       throw Exception('Failed to fetch current user');
     }
   }
+
+    static Future<Map<String, dynamic>> fetchNetwork() async {
+    final token = await getToken();
+    final res = await http.get(
+      Uri.parse('$baseUrl/auth/network'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+    final body = jsonDecode(res.body);
+    if (res.statusCode == 200 && body['success'] == 'true') {
+      return body['data'];
+    }
+    throw Exception('Failed to fetch network');
+  }
+
+
+
+static Future<List<dynamic>> fetchFoF() async {
+  final token = await getToken();
+  final res = await http.get(
+    Uri.parse('$baseUrl/auth/friends-of-friends'),
+    headers: {'Authorization': 'Bearer $token'},
+  );
+
+  final body = jsonDecode(res.body);
+  if (res.statusCode == 200 && body['success'] == 'true') {
+    return List<dynamic>.from(body['data']);
+  } else {
+    throw Exception('Failed to fetch friends of friends');
+  }
+}
+static Future<List<dynamic>> fetchDirectFriends() async {
+  final token = await getToken();
+  final res = await http.get(
+    Uri.parse('$baseUrl/auth/direct-friends'),
+    headers: {'Authorization': 'Bearer $token'},
+  );
+
+  final body = jsonDecode(res.body);
+  if (res.statusCode == 200 && body['success'] == 'true') {
+    return List<dynamic>.from(body['data']);
+  } else {
+    throw Exception('Failed to fetch direct friends');
+  }
+}
+
+
 }
