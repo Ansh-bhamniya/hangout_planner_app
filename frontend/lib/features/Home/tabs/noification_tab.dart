@@ -62,14 +62,15 @@ class _NotificationTabState extends State<NotificationTab> {
                     final isAccepted = user['isAccepted'] == true;
 
                     return ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage: user['profileImage'] != null &&
-                                user['profileImage'].toString().isNotEmpty
-                            ? NetworkImage(user['profileImage'])
-                            : const AssetImage(
-                                    'assets/images/default_avatar.png')
-                                as ImageProvider,
-                      ),
+                  leading: CircleAvatar(
+                    radius: 20,
+                    backgroundColor: Colors.grey[300],
+                    child: Icon(
+                      Icons.person,
+                      size: 28,
+                      color: Colors.grey,
+                    ),
+                  ),
                       title: Text(
                         user['name'] ?? 'Unnamed User',
                         style: const TextStyle(fontWeight: FontWeight.bold),

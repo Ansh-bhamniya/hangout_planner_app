@@ -67,7 +67,7 @@ class _AllUsersTabState extends State<AllUsersTab> {
                   final isRequested = user['followRequested'] == true;
                   final isFriend = user['isFriend'] == true;
 
-                  print('USER: ${user['_id']}, isFriend: $isFriend, followRequested: $isRequested');
+                  // print('USER: ${user['_id']}, isFriend: $isFriend, followRequested: $isRequested');
 
                   String buttonText;
                   Color buttonColor;
@@ -88,19 +88,33 @@ class _AllUsersTabState extends State<AllUsersTab> {
                   }
 
                   return ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: Colors.grey[200],
-                      backgroundImage: user['profileImage'] != null &&
-                              user['profileImage'].toString().isNotEmpty
-                          ? NetworkImage(user['profileImage'])
-                          : const AssetImage('assets/images/default_avatar.png')
-                              as ImageProvider,
+                  leading: CircleAvatar(
+                    radius: 20,
+                    backgroundColor: Colors.grey[300],
+                    child: Icon(
+                      Icons.person,
+                      size: 28,
+                      color: Colors.grey,
                     ),
-                    title: Text(
-                      user['name'] ?? 'Unnamed User',
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                    title: Row(
+                      children: [
+                        Text(
+                          user['name'] ?? 'Unnamed User',
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),                          
+                        ),
+                        // SizedBox( width: 5,),
+                        // Text('(${user['phoneNumber']})' ?? 'No phone number', style: TextStyle( fontWeight: FontWeight.w200)),
+                      ],
                     ),
-                    subtitle: Text(user['phoneNumber'] ?? 'No phone number'),
+                    subtitle: 
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [                        
+                        if (user['bio'] != null && user['bio'].toString().isNotEmpty)
+                        Text(user['bio'], style: TextStyle(fontSize: 12, color: Colors.black)),
+                      ],
+                    ),
                     trailing: ElevatedButton(
                       onPressed: onPressed,
                       style: ElevatedButton.styleFrom(

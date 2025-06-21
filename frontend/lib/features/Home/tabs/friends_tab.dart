@@ -43,18 +43,27 @@ class _FriendsTabState extends State<FriendsTab> {
                   itemBuilder: (context, index) {
                     final friend = friends[index];
                     return ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage: friend['profileImage'] != null &&
-                                friend['profileImage'].toString().isNotEmpty
-                            ? NetworkImage(friend['profileImage'])
-                            : const AssetImage('assets/images/default_avatar.png')
-                                as ImageProvider,
+                    leading: CircleAvatar(
+                      radius: 20,
+                      backgroundColor: Colors.grey[300],
+                      child: Icon(
+                        Icons.person,
+                        size: 28,
+                        color: Colors.blue,
                       ),
+                    ),
                       title: Text(
                         friend['name'] ?? 'Unnamed User',
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      subtitle: Text(friend['phoneNumber'] ?? 'No phone number'),
+                    subtitle: 
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [                        
+                        if (friend['bio'] != null && friend['bio'].toString().isNotEmpty)
+                        Text(friend['bio'], style: TextStyle(fontSize: 12, color: Colors.black)),
+                      ],
+                    ),
                     );
                   },
                 ),
