@@ -251,22 +251,37 @@ const getPendingRequests = async (req, res) => {
 
 const getFriends = async (req, res) => {
   try {
-    const currentUser = await User.findById(req.user._id);
+    const currentUser = await User.findById(req.user._id).lean();
 
-    // All users who are both in following and followers = friends
-    const friendIds = currentUser.following.filter(followingId =>
-      currentUser.followers.includes(followingId)
-    );
+    if (!currentUser) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
 
-    // Fetch friend user data
-    const friends = await User.find({ _id: { $in: friendIds } }, 'name phoneNumber bio profileImage');
+    const followingIds = currentUser.following.map(id => id.toString());
+    const followerIds = currentUser.followers.map(id => id.toString());
 
-    return res.status(200).json({ data: friends });
+    // Mutual connection = Friend
+    const friendIds = followingIds.filter(id => followerIds.includes(id));
+
+    const friends = await User.find(
+      { _id: { $in: friendIds } },
+      '_id name phoneNumber bio profileImage'
+    ).lean();
+
+    return res.status(200).json({
+      success: true,
+      data: friends
+    });
   } catch (err) {
     console.error("❌ getFriends error:", err);
-    return res.status(500).json({ message: "Failed to fetch friends" });
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch friends"
+    });
   }
 };
+
+
 
 // GET /auth/me - Returns current user ID and basic info
 const getMe = async (req, res) => {
