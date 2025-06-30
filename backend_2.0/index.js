@@ -13,6 +13,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // ✅ Controllers
 const authController = require('./controllers/auth');
+const tripController = require('./controllers/tripController');
 const authMiddleware = require('./controllers/authMiddleware');
 const { getUserNetwork , getFriendsOf, getFriendsOfFriends} = require('./controllers/userNetworkController');
 // ✅ Auth Routes
@@ -30,6 +31,13 @@ app.get('/auth/me', authMiddleware, authController.getMe);
 app.get('/auth/network', authMiddleware, getUserNetwork);
 app.get('/auth/direct-friends', authMiddleware, getFriendsOf);
 app.get('/auth/friends-of-friends', authMiddleware, getFriendsOfFriends);
+
+// ✅ Trip routes
+app.post('/auth/trips/create', authMiddleware, tripController.createTrip);
+app.get('/auth/trips/inbox', authMiddleware, tripController.getIncomingTrips);
+app.post('/auth/trips/:tripId/approve', authMiddleware, tripController.approveTrip);
+app.get('/auth/trips/my', authMiddleware, tripController.getMyTrips);
+// to approve a pending trip
 
 // ✅ Root route
 app.get('/', (req, res) => {

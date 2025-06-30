@@ -242,4 +242,38 @@ static Future<List<dynamic>> fetchDirectFriends() async {
 }
 
 
+static Future<void> sendTripRequest({
+  required String creatorId,
+  required List<String> selectedIds,
+  required String title,
+  required String message,
+}) async {
+  final token = await getToken();
+
+  final res = await http.post(
+    Uri.parse('$baseUrl/auth/trips/create'),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+    body: jsonEncode({
+      "selectedIds": selectedIds,
+      "title": title,
+      "message": message,
+    }),
+  );
+
+  final body = jsonDecode(res.body);
+  print("📦 Response: $body");
+
+  if (res.statusCode == 201) {
+    // success
+    return;
+  } else {
+    throw Exception('Failed to send trip request: ${body['message']}');
+  }
+}
+
+
+
 }

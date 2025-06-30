@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_01/features/Home/tabs/TripListTab.dart';
 import 'package:frontend_01/features/Home/tabs/all_users_tab.dart';
 import 'package:frontend_01/features/Home/tabs/friends_tab.dart';
 import 'package:frontend_01/features/Home/tabs/nodes.dart';
 import 'package:frontend_01/features/Home/tabs/noification_tab.dart';
+import 'package:frontend_01/features/Home/tabs/trip_tab.dart';
 import 'package:frontend_01/features/Profile/three_dots.dart';
 import 'package:frontend_01/features/auth/login_screen.dart';
 
 class LandingScreen extends StatelessWidget {
   const LandingScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
     final List<Tab> tabs = const [
@@ -16,14 +17,16 @@ class LandingScreen extends StatelessWidget {
       Tab(text: "Friends"),
       Tab(text: "Notifications"),
       Tab(text: "Nodes"),
+      Tab(text: "trip ",)
     ];
 
-    final List<Widget> tabViews = const [
-      AllUsersTab(),
-      FriendsTab(),
-      NotificationTab(),
-      Nodes(),
-    ];
+  final List<Widget> tabViews = const [
+    AllUsersTab(),
+    FriendsTab(),
+    NotificationTab(),
+    Nodes(),
+    TripListTab(), // <- Replace TripTab
+  ];
 
     return DefaultTabController(
       length: tabs.length,
