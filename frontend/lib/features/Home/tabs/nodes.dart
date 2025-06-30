@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:graphview/GraphView.dart';
 import 'package:frontend_01/services/api_service.dart';
+import 'trip_tab.dart';
 
 class Nodes extends StatefulWidget {
   const Nodes({super.key});
@@ -12,7 +13,8 @@ class Nodes extends StatefulWidget {
 class _NodesState extends State<Nodes> {
   final Graph graph = Graph()..isTree = false;
   final Map<String, Node> userNodes = {};
-  final Map<String, String> userNames = {}; // 
+  final Map<String, String> userNames = {}; // id -> name
+  final Set<String> selectedNodes = {}; // stores selected node ids
 
   String? myId;
   Set<String> friendsOf = {};
@@ -44,10 +46,9 @@ class _NodesState extends State<Nodes> {
         }
       }
 
-      // Add self node
       addNode(myId!, 'Me');
+      selectedNodes.add(myId!); // default selected
 
-      // Connect direct friends
       for (var fId in direct) {
         final friend = allUsers.firstWhere((u) => u['_id'] == fId, orElse: () => null);
         if (friend != null) {
@@ -56,7 +57,6 @@ class _NodesState extends State<Nodes> {
         }
       }
 
-      // Add and connect FOF and strangers
       for (var user in allUsers) {
         final uid = user['_id'] as String;
         final uname = user['name'] ?? 'User';
@@ -65,12 +65,17 @@ class _NodesState extends State<Nodes> {
 
         addNode(uid, uname);
 
-        // Connect FOFs to their friend
-        if (fof.contains(uid)) {
-          for (String fId in direct) {
-            graph.addEdge(userNodes[fId]!, userNodes[uid]!);
-          }
+      if (fof.contains(uid)) {
+        // Connect FOF to any one friend (to avoid multiple lines)
+        final friend = direct.firstWhere(
+          (fId) => userNodes.containsKey(fId),
+          orElse: () => '',
+        );
+        if (friend != null) {
+          graph.addEdge(userNodes[friend]!, userNodes[uid]!);
         }
+      }
+
       }
 
       setState(() {});
@@ -87,32 +92,106 @@ class _NodesState extends State<Nodes> {
     if (id == myId) {
       color = Colors.blue;
     } else if (friendsOf.contains(id)) {
-      color = Colors.green;
+      color = selectedNodes.contains(id) ? Colors.green[800]! : Colors.green;
     } else if (friendsOfFriends.contains(id)) {
-      color = Colors.orange;
+      color = selectedNodes.contains(id) ? Colors.orange[800]! : Colors.orange;
     } else {
       color = Colors.grey;
     }
 
-    return Container(
-      width: 50,
-      height: 50,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: color,
-        shape: BoxShape.circle,
+    return GestureDetector(
+      onTap: () {
+        if (id == myId) return;
+        if (friendsOf.contains(id) || friendsOfFriends.contains(id)) {
+          setState(() {
+            if (selectedNodes.contains(id)) {
+              selectedNodes.remove(id);
+            } else {
+              selectedNodes.add(id);
+            }
+          });
+        }
+      },
+      child: Container(
+        width: 70,
+        height: 70,
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: color,
+          shape: BoxShape.circle,
+        ),
+        child: Center(
+          child: Text(
+            name.length > 8 ? name.substring(0, 8) : name,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.white, fontSize: 10),
+          ),
+        ),
       ),
-      child: Text(
-        name.length > 8 ? name.substring(0, 8) : name,
-        textAlign: TextAlign.center,
-        style: const TextStyle(color: Colors.white, fontSize: 10),
-      ),
+    );
+  }
+
+  void goToTripScreen() async {
+    String title = '';
+    String message = '';
+
+    await showDialog(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          title: const Text("Create Trip"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                decoration: const InputDecoration(labelText: 'Title'),
+                onChanged: (val) => title = val,
+              ),
+              TextField(
+                decoration: const InputDecoration(labelText: 'Message'),
+                onChanged: (val) => message = val,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => TripTab(
+                      selectedIds: selectedNodes.toList(),
+                      myId: myId!,
+                      title: title,
+                      message: message,
+                    ),
+                  ),
+                );
+              },
+              child: const Text("Next"),
+            ),
+          ],
+        );
+      },
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: const Text("Social Graph")),
+      floatingActionButton: selectedNodes.length > 1
+          ? FloatingActionButton.extended(
+              onPressed: goToTripScreen,
+              icon: const Icon(Icons.send),
+              label: const Text("Create Trip"),
+            )
+          : null,
       body: userNodes.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : InteractiveViewer(
