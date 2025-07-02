@@ -20,7 +20,7 @@ class _OtpScreenState extends State<OtpScreen> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res['message'])));
     }
   }
-
+// some minor fixes
   @override
   Widget build(BuildContext context) {
     final phone = ModalRoute.of(context)?.settings.arguments as String? ?? '';
