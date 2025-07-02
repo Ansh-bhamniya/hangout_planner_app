@@ -21,7 +21,8 @@ class _NotificationTabState extends State<NotificationTab> {
     fetchPendingRequests();
     fetchTripRequests();
   }
-
+  // this is updated one 
+  // now two degreee friend is successfully 
   // void getUserId() async {
   //   currentUserId = await ApiService.getUserId();
   // }
