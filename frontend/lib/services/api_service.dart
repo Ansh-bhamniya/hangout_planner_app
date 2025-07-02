@@ -17,7 +17,7 @@ class ApiService {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('authToken') ?? '';
   }
-
+  // new api for get user id for currecnt user 
   static Future<String> getUserId() async {
     final token = await getToken(); // fetch from secure storage
 
