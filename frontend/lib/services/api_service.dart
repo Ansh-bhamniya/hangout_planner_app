@@ -18,6 +18,25 @@ class ApiService {
     return prefs.getString('authToken') ?? '';
   }
 
+  static Future<String> getUserId() async {
+    final token = await getToken(); // fetch from secure storage
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/auth/me'), // you must have this route in backend
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['_id']; // or data['user']['_id'] based on your backend
+    } else {
+      throw Exception('Failed to fetch user ID');
+    }
+  }
+
   // ✅ Register API
   static Future<Map<String, dynamic>> register(Map<String, dynamic> data) async {
     try {
@@ -126,8 +145,8 @@ class ApiService {
         'Authorization': 'Bearer $token',
       },
     );
-    print('body : ${response.statusCode}');    
-    print('body : ${response.body}');
+    // print('macbook1 : ${response.statusCode}');    
+    // print('macbook2 : ${response.body}');
     if (response.statusCode == 200) {
       return jsonDecode(response.body)['data'];
     } else {
@@ -165,37 +184,46 @@ class ApiService {
   }
 }
 
-  static Future<String> getCurrentUserId() async {
-    final token = await getToken();
-    final response = await http.get(
-      Uri.parse('$baseUrl/auth/me'),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
-    );
+static Future<String> getCurrentUserId() async {
+  final token = await getToken();
+  final response = await http.get(
+    Uri.parse('$baseUrl/auth/me'),
+    headers: {
+      'Authorization': 'Bearer $token',
+    },
+  );
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body)['data'];
+  if (response.statusCode == 200) {
+    final body = jsonDecode(response.body);
+    final data = body['data'];
+    if (data != null && data['_id'] != null) {
       return data['_id'];
     } else {
-      throw Exception('Failed to fetch current user ID');
+      throw Exception("No _id in response: $body");
     }
+  } else {
+    throw Exception("Failed to fetch current user ID: ${response.body}");
   }
+}
   // used in profile page 
-  static Future<Map<String, dynamic>> getCurrentUserDetails() async {
-    final token = await getToken();
-    final response = await http.get(
-      Uri.parse('$baseUrl/auth/me'),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
-    );
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body)['data'];
-    } else {
-      throw Exception('Failed to fetch current user');
-    }
+static Future<Map<String, dynamic>> getCurrentUserDetails() async {
+  final token = await getToken();
+  final response = await http.get(
+    Uri.parse('$baseUrl/auth/me'),
+    headers: {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    },
+  );
+
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    return data; // 👈 Directly return user object
+    
   }
+  throw Exception('Failed to fetch current user');
+}
+
 
     static Future<Map<String, dynamic>> fetchNetwork() async {
     final token = await getToken();
@@ -243,7 +271,7 @@ static Future<List<dynamic>> fetchDirectFriends() async {
 
 
 static Future<void> sendTripRequest({
-  required String creatorId,
+  // required String creatorId,
   required List<String> selectedIds,
   required String title,
   required String message,
@@ -274,6 +302,96 @@ static Future<void> sendTripRequest({
   }
 }
 
+  // ✅ Fetch incoming trip invitations
+static Future<List<dynamic>> fetchIncomingTrips() async {
+  final token = await getToken(); // <-- token must exist
+  final response = await http.get(
+    Uri.parse('$baseUrl/auth/trips/incoming'),
+    headers: {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    },
+  );
 
+  if (response.statusCode == 200) {
+    return jsonDecode(response.body);
+  } else {
+    throw Exception('Failed to fetch incoming trips');
+  }
+}
+    // ✅ Approve a specific trip by tripId
+    static Future<void> approveTripRequest(String tripId) async {
+      final token = await getToken();
+      final response = await http.post(
+        Uri.parse('$baseUrl/auth/trips/$tripId/approve'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
 
+      if (response.statusCode != 200) {
+        throw Exception("Failed to approve trip: ${response.body}");
+      }
+    }
+  static Future<void> sendTripInvite(String tripId, String userId) async {
+    final token = await getToken();
+
+    final url = Uri.parse('$baseUrl/auth/trips/$tripId/invite/$userId');
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+    final body = jsonDecode(response.body);
+    print(" invite_response : ${body}");
+    if (response.statusCode != 200) {
+      final body = jsonDecode(response.body);
+      throw Exception(body['message'] ?? 'Failed to send trip invite');
+    }
+  }
+
+static Future<List<String>> getFriendListOf(String userId) async {
+  final token = await getToken();
+  final res = await http.get(
+    Uri.parse('$baseUrl/auth/direct-friends'),
+    headers: {'Authorization': 'Bearer $token'},
+  );
+
+  if (res.statusCode == 200) {
+    final body = jsonDecode(res.body);
+
+    // Handle success: string vs bool in `success`
+    final success = body['success'].toString().toLowerCase() == 'true';
+    if (success && body['data'] is List) {
+      final List<dynamic> friends = body['data'];
+      return friends.map<String>((u) => u['_id'].toString()).toList();
+    }
+  }
+
+  throw Exception('Failed to fetch direct friends');
+}
+// Add this method to your ApiService class
+
+static Future<List<String>> getCreatorFriends(String creatorId) async {
+  final token = await getToken();
+  final res = await http.get(
+    Uri.parse('$baseUrl/auth/users/$creatorId/friends'),
+    headers: {'Authorization': 'Bearer $token'},
+  );
+
+  if (res.statusCode == 200) {
+    final body = jsonDecode(res.body);
+    final success = body['success'].toString().toLowerCase() == 'true';
+    if (success && body['data'] is List) {
+      final List<dynamic> friends = body['data'];
+      return friends.map<String>((u) => u['_id'].toString()).toList();
+    }
+  }
+
+  throw Exception('Failed to fetch creator friends');
+}
 }

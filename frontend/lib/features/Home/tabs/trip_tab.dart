@@ -3,14 +3,12 @@ import 'package:frontend_01/services/api_service.dart';
 
 class TripTab extends StatefulWidget {
   final List<String> selectedIds;
-  final String myId;
   final String title;
   final String message;
 
   const TripTab({
     super.key,
     required this.selectedIds,
-    required this.myId,
     required this.title,
     required this.message,
   });
@@ -26,15 +24,18 @@ class _TripTabState extends State<TripTab> {
   Future<void> sendTripRequest() async {
     setState(() => isSending = true);
     try {
-      final response = await ApiService.sendTripRequest(
-        creatorId: widget.myId,
+      await ApiService.sendTripRequest(
         selectedIds: widget.selectedIds,
         title: widget.title,
         message: widget.message,
       );
-      setState(() => statusMessage = "Trip created and sent to ${widget.selectedIds.length} users");
+      setState(() => statusMessage = "✅ Trip created and sent to ${widget.selectedIds.length} users");
+
+      // Optional: Navigate back after a short delay
+      await Future.delayed(const Duration(seconds: 2));
+      if (mounted) Navigator.of(context).pop();
     } catch (e) {
-      setState(() => statusMessage = "Error sending trip request: $e");
+      setState(() => statusMessage = "❌ Error: $e");
     } finally {
       setState(() => isSending = false);
     }
@@ -55,10 +56,10 @@ class _TripTabState extends State<TripTab> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Message:", style: TextStyle(fontWeight: FontWeight.bold)),
+            Text("📩 Message:", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             Text(widget.message),
             const SizedBox(height: 20),
-            Text("Participants:", style: TextStyle(fontWeight: FontWeight.bold)),
+            Text("👥 Participants:", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             Expanded(
               child: ListView.builder(
                 itemCount: widget.selectedIds.length,
@@ -68,8 +69,19 @@ class _TripTabState extends State<TripTab> {
                 ),
               ),
             ),
-            if (isSending) const CircularProgressIndicator(),
-            if (statusMessage.isNotEmpty) Text(statusMessage),
+            const SizedBox(height: 20),
+            if (isSending) const Center(child: CircularProgressIndicator()),
+            if (statusMessage.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: Text(
+                  statusMessage,
+                  style: TextStyle(
+                    color: statusMessage.contains("Error") ? Colors.red : Colors.green,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
           ],
         ),
       ),

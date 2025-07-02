@@ -12,7 +12,14 @@ const tripSchema = new mongoose.Schema({
     creator: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     title: { type: String, required: true },
     message: { type: String },
-    participants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // ✅ FIXED
+    participants: [{
+      user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+      status: { type: String, enum: ['pending', 'approved'], default: 'pending' },
+      visible: { type: Boolean, default: false } // 👈 NEW field
+
+    }],
+    approvals: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    // status: { type: String, default: 'pending' }, // could be 'pending' or 'approved'
 
   }, { timestamps: true });
   

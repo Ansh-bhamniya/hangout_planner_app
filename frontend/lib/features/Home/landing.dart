@@ -17,7 +17,7 @@ class LandingScreen extends StatelessWidget {
       Tab(text: "Friends"),
       Tab(text: "Notifications"),
       Tab(text: "Nodes"),
-      Tab(text: "trip ",)
+      // Tab(text: "trip ",)
     ];
 
   final List<Widget> tabViews = const [
@@ -25,7 +25,7 @@ class LandingScreen extends StatelessWidget {
     FriendsTab(),
     NotificationTab(),
     Nodes(),
-    TripListTab(), // <- Replace TripTab
+    // TripListTab(), // <- Replace TripTab
   ];
 
     return DefaultTabController(

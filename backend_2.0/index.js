@@ -34,9 +34,12 @@ app.get('/auth/friends-of-friends', authMiddleware, getFriendsOfFriends);
 
 // ✅ Trip routes
 app.post('/auth/trips/create', authMiddleware, tripController.createTrip);
-app.get('/auth/trips/inbox', authMiddleware, tripController.getIncomingTrips);
+app.get('/auth/trips/incoming', authMiddleware, tripController.getIncomingTrips);
 app.post('/auth/trips/:tripId/approve', authMiddleware, tripController.approveTrip);
 app.get('/auth/trips/my', authMiddleware, tripController.getMyTrips);
+// ✅ NEW: Allow a participant to send trip invite to another participant
+app.post('/auth/trips/:tripId/invite/:userId', authMiddleware, tripController.inviteToTrip);
+app.post('/auth/users/:userId/friends', authMiddleware, tripController.getUserFriends);
 // to approve a pending trip
 
 // ✅ Root route
