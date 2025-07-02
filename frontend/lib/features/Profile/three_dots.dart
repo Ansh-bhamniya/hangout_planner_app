@@ -21,10 +21,13 @@ class _ThreeDotsState extends State<ThreeDots> {
 
   Future<void> loadUserData() async {
     try {
-      final data = await ApiService.getCurrentUserDetails();
+      final response = await ApiService.getCurrentUserDetails(); // returns: { success: true, data: {...} }
+      // print('khatola : $response');
+
+      final userData = response['data'];
       setState(() {
-        name = data['name'];
-        phoneNumber = data['phoneNumber'];
+        name = userData['name'];
+        phoneNumber = userData['phoneNumber'];
         isLoading = false;
       });
     } catch (e) {

@@ -22,6 +22,8 @@ class _AllUsersTabState extends State<AllUsersTab> {
   Future<void> fetchUsers() async {
     try {
       final data = await ApiService.fetchAllUsers();
+      print("📦 Raw users fetched: $data"); // Add this
+
       final myId = await ApiService.getCurrentUserId(); // Make sure this exists in ApiService
       setState(() {
         currentUserId = myId;

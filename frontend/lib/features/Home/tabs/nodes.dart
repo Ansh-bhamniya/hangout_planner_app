@@ -166,7 +166,7 @@ class _NodesState extends State<Nodes> {
                   MaterialPageRoute(
                     builder: (_) => TripTab(
                       selectedIds: selectedNodes.toList(),
-                      myId: myId!,
+                      // myId: myId!,
                       title: title,
                       message: message,
                     ),
