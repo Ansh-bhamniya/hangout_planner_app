@@ -269,7 +269,7 @@ static Future<List<dynamic>> fetchDirectFriends() async {
   }
 }
 
-
+// this is send trip request to 2 degree but only send by 1 degree 
 static Future<void> sendTripRequest({
   // required String creatorId,
   required List<String> selectedIds,
