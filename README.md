@@ -75,3 +75,90 @@ cp .env.example .env
 npm install
 npm run dev         # Starts Node.js server
 npm test            # Run backend tests
+Flutter App Setup
+bash
+Copy
+Edit
+cd mobile
+flutter pub get
+flutter run -d <device>  # Run on Android or iOS
+flutter test             # Run Flutter tests
+Usage
+Register or log in on the app.
+
+Create a hangout with options.
+
+Invite participants.
+
+Users vote via Flutter interface.
+
+Backend tallies votes and picks winner.
+
+Notifications sent; attendees can export to calendar.
+
+API Endpoints
+Auth
+
+POST /api/auth/signup
+
+POST /api/auth/login
+
+Events
+
+GET /api/events
+
+POST /api/events
+
+GET /api/events/:id
+
+PATCH /api/events/:id
+
+DELETE /api/events/:id
+
+Invites & Voting
+
+POST /api/events/:id/invite
+
+GET /api/events/:id/invites
+
+POST /api/events/:id/vote
+
+GET /api/events/:id/votes
+
+Finalize
+
+POST /api/events/:id/finalize
+
+Testing
+Backend: cd backend && npm test
+
+Frontend: cd mobile && flutter test
+
+Flavors (Optional)
+Configure environments:
+
+bash
+Copy
+Edit
+flutter run --flavor development -d <device>
+flutter run --flavor production -d <device>
+Align with separate .env or config files.
+
+Contributing
+We welcome contributions!
+
+Fork the repo
+
+Create a feature branch: git checkout -b feature/my-feature
+
+Commit changes: git commit -m "Add new feature"
+
+Push: git push origin feature/my-feature
+
+Open a PR
+
+License
+Distributed under the MIT License. See LICENSE for details.
+
+Contact
+Developed by Ansh Bhamiya – feel free to reach out via GitHub or open an issue.
