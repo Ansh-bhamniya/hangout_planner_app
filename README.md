@@ -1,15 +1,9 @@
-\section*{Projects}
+# Hangout Planner App 📱
 
-\textbf{Hangout Planner App} 📱 \\
-A comprehensive Flutter mobile app (Node.js backend) for planning and coordinating hangouts. \\
-\href{https://github.com/Ansh-bhamniya/hangout_planner_app}{GitHub} \quad
-\href{https://drive.google.com/file/d/1mObhA8odwQSAi7_W3nsrC1sFkFpKESck/view?usp=sharing}{Demo Video}
+A comprehensive Flutter application for planning and organizing hangouts with friends, powered by a Node.js backend. This app helps users create, manage, and coordinate social gatherings with an intuitive mobile interface.
 
-\vspace{-0.3em}
-\begin{itemize}[leftmargin=*,itemsep=0pt]
-  \item Event creation with real-time RSVP, live updates, Google Maps integration, and push notifications.
-  \item Cross-platform Flutter UI with authentication, offline support, themes; uses Node.js backend, JWT, Socket.io.
-\end{itemize}
+# Demo Video Link
+https://drive.google.com/file/d/1mObhA8odwQSAi7_W3nsrC1sFkFpKESck/view?usp=sharing
 
 ## Features ✨
 
