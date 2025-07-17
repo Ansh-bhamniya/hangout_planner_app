@@ -1,164 +1,276 @@
-# 🎉 Hangout Planner App
+\section*{Projects}
 
-A cross-platform mobile app (Flutter) with a **Node.js + Express** backend to help friends plan, vote on, and finalize group hangouts seamlessly.
+\textbf{Hangout Planner App} 📱 \\
+A comprehensive Flutter mobile app (Node.js backend) for planning and coordinating hangouts. \\
+\href{https://github.com/Ansh-bhamniya/hangout_planner_app}{GitHub} \quad
+\href{https://drive.google.com/file/d/1mObhA8odwQSAi7_W3nsrC1sFkFpKESck/view?usp=sharing}{Demo Video}
 
----
+\vspace{-0.3em}
+\begin{itemize}[leftmargin=*,itemsep=0pt]
+  \item Event creation with real-time RSVP, live updates, Google Maps integration, and push notifications.
+  \item Cross-platform Flutter UI with authentication, offline support, themes; uses Node.js backend, JWT, Socket.io.
+\end{itemize}
 
-## 📌 Table of Contents
+## Features ✨
 
-- [About The Project](#about-the-project)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Backend Setup](#backend-setup)
-  - [Flutter App Setup](#flutter-app-setup)
-- [Usage](#usage)
-- [API Endpoints](#api-endpoints)
-- [Testing](#testing)
-- [Flavors](#flavors)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact](#contact)
+### Core Functionality
+- **Event Creation**: Create detailed hangout events with customizable options
+- **User Management**: User authentication and profile management
+- **Real-time Updates**: Live synchronization of event changes
+- **RSVP System**: Easy response tracking for event participants
+- **Location Integration**: Map integration for venue selection
+- **Notification System**: Push notifications for event updates
 
----
+### User Experience
+- **Intuitive UI**: Clean, modern Flutter interface
+- **Cross-platform**: Works on both iOS and Android
+- **Offline Support**: Core features available without internet
+- **Dark/Light Theme**: Customizable app appearance
 
-## About The Project
+## Tech Stack 🛠️
 
-This app simplifies planning hangouts:
+### Frontend (Flutter)
+- **Framework**: Flutter 3.x
+- **Language**: Dart
+- **State Management**: Provider/Riverpod/Bloc (specify which one you're using)
+- **HTTP Client**: Dio/HTTP package
+- **Local Storage**: Hive/SharedPreferences
+- **Maps**: Google Maps Flutter
+- **Notifications**: Firebase Cloud Messaging
 
-1. Create an event with proposed date/time and location options.
-2. Invite friends via email or shareable link.
-3. Collect votes on options via Flutter app.
-4. Automatically select the most popular option.
-5. Send push notifications and allow calendar exports.
+### Backend (Node.js)
+- **Runtime**: Node.js
+- **Framework**: Express.js
+- **Database**: MongoDB/PostgreSQL (specify your choice)
+- **Authentication**: JWT (JSON Web Tokens)
+- **Real-time**: Socket.io
+- **Cloud Storage**: AWS S3/Firebase Storage
 
----
-
-## Features
-
-- 📅 Multi-option events (dates, times, venues)
-- 📩 Invite via email/link
-- 🗳 Voting system
-- 🏆 Auto-finalization of options
-- 🔔 Push notifications
-- 📥 Calendar export (iCal / Google)
-- 🎯 Android & iOS support via Flutter
-
----
-
-## Tech Stack
-
-- **Backend**: Node.js + Express
-- **Database**: MongoDB (Mongoose ORM)
-- **Auth**: JWT
-- **Email**: Nodemailer
-- **Mobile**: Flutter (Dart)
-- **Deployment Suggestions**: Heroku, AWS, Firebase
-
----
-
-## Getting Started
+## Getting Started 🚀
 
 ### Prerequisites
+- Flutter SDK (3.0.0 or higher)
+- Dart SDK (2.17.0 or higher)
+- Node.js (16.0 or higher)
+- npm or yarn
+- Android Studio/VS Code
+- Git
 
-- Node.js ≥14 & npm
-- MongoDB (local or cloud)
-- Flutter SDK ≥3.0
+### Installation
 
-### Backend Setup
-
+#### 1. Clone the Repository
 ```bash
+git clone https://github.com/Ansh-bhamniya/hangout_planner_app.git
+cd hangout_planner_app
+```
+
+#### 2. Backend Setup
+```bash
+# Navigate to backend directory
 cd backend
-cp .env.example .env
-# Fill in DB_URI, JWT_SECRET, EMAIL_ credentials
+
+# Install dependencies
 npm install
-npm run dev         # Starts Node.js server
-npm test            # Run backend tests
-Flutter App Setup
-bash
-Copy
-Edit
-cd mobile
+
+# Create environment file
+cp .env.example .env
+
+# Configure your environment variables in .env
+# DB_CONNECTION_STRING=your_database_url
+# JWT_SECRET=your_jwt_secret
+# PORT=3000
+
+# Start the development server
+npm run dev
+```
+
+#### 3. Flutter App Setup
+```bash
+# Navigate to Flutter app directory
+cd flutter_app
+
+# Install dependencies
 flutter pub get
-flutter run -d <device>  # Run on Android or iOS
-flutter test             # Run Flutter tests
-Usage
-Register or log in on the app.
 
-Create a hangout with options.
+# Configure API endpoints in lib/config/api_config.dart
+# Update BASE_URL to point to your backend
 
-Invite participants.
+# Run the app
+flutter run
+```
 
-Users vote via Flutter interface.
+## Configuration ⚙️
 
-Backend tallies votes and picks winner.
+### Environment Variables (Backend)
+Create a `.env` file in the backend directory:
 
-Notifications sent; attendees can export to calendar.
+```env
+# Database
+DB_CONNECTION_STRING=mongodb://localhost:27017/hangout_planner
+# or for PostgreSQL: postgresql://username:password@localhost:5432/hangout_planner
 
-API Endpoints
-Auth
+# Authentication
+JWT_SECRET=your_super_secret_jwt_key
+JWT_EXPIRE_TIME=7d
 
-POST /api/auth/signup
+# Server
+PORT=3000
+NODE_ENV=development
 
-POST /api/auth/login
+# External APIs
+GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+FIREBASE_SERVER_KEY=your_firebase_server_key
 
-Events
+# File Upload
+UPLOAD_PATH=./uploads
+MAX_FILE_SIZE=10MB
+```
 
-GET /api/events
+### Flutter Configuration
+Update `lib/config/api_config.dart`:
 
-POST /api/events
+```dart
+class ApiConfig {
+  static const String baseUrl = 'http://localhost:3000/api';
+  static const String socketUrl = 'http://localhost:3000';
+  static const String googleMapsApiKey = 'your_google_maps_api_key';
+}
+```
 
-GET /api/events/:id
+## Project Structure 📁
 
-PATCH /api/events/:id
+```
+hangout_planner_app/
+├── backend/
+│   ├── controllers/
+│   ├── models/
+│   ├── routes/
+│   ├── middleware/
+│   ├── config/
+│   └── server.js
+├── flutter_app/
+│   ├── lib/
+│   │   ├── models/
+│   │   ├── screens/
+│   │   ├── widgets/
+│   │   ├── services/
+│   │   ├── providers/
+│   │   └── main.dart
+│   ├── android/
+│   ├── ios/
+│   └── pubspec.yaml
+├── docs/
+└── README.md
+```
 
-DELETE /api/events/:id
+## API Endpoints 🔗
 
-Invites & Voting
+### Authentication
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/login` - User login
+- `POST /api/auth/logout` - User logout
+- `GET /api/auth/profile` - Get user profile
 
-POST /api/events/:id/invite
+### Events
+- `GET /api/events` - Get all events
+- `POST /api/events` - Create new event
+- `GET /api/events/:id` - Get specific event
+- `PUT /api/events/:id` - Update event
+- `DELETE /api/events/:id` - Delete event
 
-GET /api/events/:id/invites
+### RSVP
+- `POST /api/events/:id/rsvp` - RSVP to event
+- `GET /api/events/:id/attendees` - Get event attendees
 
-POST /api/events/:id/vote
+## Development 💻
 
-GET /api/events/:id/votes
+### Running Tests
+```bash
+# Backend tests
+cd backend
+npm test
 
-Finalize
+# Flutter tests
+cd flutter_app
+flutter test
+```
 
-POST /api/events/:id/finalize
+### Code Style
+- **Flutter**: Follow [Dart Style Guide](https://dart.dev/guides/language/effective-dart/style)
+- **Backend**: Use ESLint with Airbnb configuration
 
-Testing
-Backend: cd backend && npm test
+### Git Workflow
+1. Create feature branch from `main`
+2. Make changes and commit with descriptive messages
+3. Push branch and create Pull Request
+4. Code review and merge
 
-Frontend: cd mobile && flutter test
+## Deployment 🚀
 
-Flavors (Optional)
-Configure environments:
+### Backend Deployment
+```bash
+# Build for production
+npm run build
 
-bash
-Copy
-Edit
-flutter run --flavor development -d <device>
-flutter run --flavor production -d <device>
-Align with separate .env or config files.
+# Start production server
+npm start
+```
 
-Contributing
-We welcome contributions!
+### Flutter App Deployment
 
-Fork the repo
+#### Android
+```bash
+flutter build apk --release
+# or
+flutter build appbundle --release
+```
 
-Create a feature branch: git checkout -b feature/my-feature
+#### iOS
+```bash
+flutter build ios --release
+```
 
-Commit changes: git commit -m "Add new feature"
+## Contributing 🤝
 
-Push: git push origin feature/my-feature
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-Open a PR
+### Contribution Guidelines
+- Follow the existing code style
+- Write tests for new features
+- Update documentation as needed
+- Ensure all tests pass before submitting PR
 
-License
-Distributed under the MIT License. See LICENSE for details.
+## License 📄
 
-Contact
-Developed by Ansh Bhamiya – feel free to reach out via GitHub or open an issue.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Support 📞
+
+If you encounter any issues or have questions:
+
+1. Check the [Issues](https://github.com/Ansh-bhamniya/hangout_planner_app/issues) page
+2. Create a new issue if your problem isn't already reported
+3. Contact the maintainer: [Ansh Bhamniya](https://github.com/Ansh-bhamniya)
+
+## Acknowledgments 🙏
+
+- Flutter team for the amazing framework
+- Node.js community for excellent backend tools
+- All contributors who helped improve this project
+
+## Roadmap 🗺️
+
+- [ ] Integration with calendar apps
+- [ ] Advanced notification preferences
+- [ ] Group chat functionality
+- [ ] Event analytics and insights
+- [ ] Integration with social media platforms
+- [ ] Multi-language support
+
+---
+
+**Made with ❤️ by [Ansh Bhamniya](https://github.com/Ansh-bhamniya)**
